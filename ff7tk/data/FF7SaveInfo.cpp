@@ -447,7 +447,6 @@ QString FF7SaveInfo::knownTypesFilter() const
         .arg(d->PSX_VALID_EXTENSIONS.join(QStringLiteral(" ")))
         .arg(d->PSP_VALID_EXTENSIONS.join(QStringLiteral(" ")))
         .arg(d->PS3_VALID_EXTENSIONS.join(QStringLiteral(" ")))
-        .arg(d->PS3_VALID_EXTENSIONS.join(QStringLiteral(" ")))
         .arg(d->PS4_VALID_EXTENSIONS.join(QStringLiteral(" ")))
         .arg(d->DEX_VALID_EXTENSIONS.join(QStringLiteral(" ")))
         .arg(d->VGS_VALID_EXTENSIONS.join(QStringLiteral(" ")))
