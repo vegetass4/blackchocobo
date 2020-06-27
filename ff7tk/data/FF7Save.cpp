@@ -59,8 +59,24 @@ bool FF7Save::loadFile(const QString &fileName)
         else
             qInfo() << tr("Unable to open PSV of Type %2: 0x%1").arg(psvType, 2, 16, QChar('0')).arg(psvType == 0x14 ? QStringLiteral("PSX") : psvType == 0x2C ? QStringLiteral ("PS2") : QStringLiteral("Unknown"));
     }
+    else if ((file_size == FF7SaveInfo::instance()->fileSize(FF7SaveInfo::FORMAT::PS4)) && file.peek(0x00B0+FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::PS4).length()).mid(0x00B0,FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::PS4).length()) == FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::PS4)) { // && (file.peek(0x00B0+FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::PS4).length()).mid(0x00B0,FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::PS4).length()) == FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::PS4))
+        qInfo() << tr("[FF7Save::loadFile] PS4 Save"); qInfo() << file.peek(0x00B0+FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::PS4).length()).mid(0x00B0,FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::PS4).length());
+        QFile ps4binfile(QFileInfo(file).path() + "/" + QFileInfo(file).fileName() + ".bin");//QFileInfo(file).baseName()
+        if (!ps4binfile.open(QIODevice::ReadOnly)) {
+            return false;
+        } else {
+            qInfo() << tr("[FF7Save::loadFile] PS4 BIN File loaded: %1").arg(QFileInfo(ps4binfile).absoluteFilePath());
+            if(ps4binfile.size() == FF7SaveInfo::instance()->fileSize(FF7SaveInfo::FORMAT::PS4BIN)) {
+                qInfo() << tr("[FF7Save::loadFile] PS4 BIN File Size: %1").arg(FF7SaveInfo::instance()->fileSize(FF7SaveInfo::FORMAT::PS4BIN));
+                if(ps4binfile.peek(sizeof(FF7SaveInfo::pfsSKKey().MAGIC)) == QByteArray::fromRawData("\x70\x66\x73\x53\x4B\x4B\x65\x79", 8)) {
+                qInfo() << tr("[FF7Save::loadFile] PS4 BIN File pfsSKKey String Found");
+                setFormat(FF7SaveInfo::FORMAT::PS4);
+                }
+            }
+        }
+    }
     else if ((file_size == FF7SaveInfo::instance()->fileSize(FF7SaveInfo::FORMAT::PSP)) && (file.peek(FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::PSP).length())) == FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::PSP))
-            setFormat(FF7SaveInfo::FORMAT::PSP);
+        setFormat(FF7SaveInfo::FORMAT::PSP);
     else if ((file_size == FF7SaveInfo::instance()->fileSize(FF7SaveInfo::FORMAT::VGS)) && (file.peek(FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::VGS).length())) == FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::VGS))
         setFormat(FF7SaveInfo::FORMAT::VGS);
     else if ((file_size == FF7SaveInfo::instance()->fileSize(FF7SaveInfo::FORMAT::DEX)) && (file.peek(FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::DEX).length())) == FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::DEX))
