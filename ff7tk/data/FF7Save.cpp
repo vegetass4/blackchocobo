@@ -63,6 +63,7 @@ bool FF7Save::loadFile(const QString &fileName)
         qInfo() << tr("[FF7Save::loadFile] PS4 Save"); qInfo() << file.peek(0x00B0+FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::PS4).length()).mid(0x00B0,FF7SaveInfo::instance()->fileIdentifier(FF7SaveInfo::FORMAT::PS4).length());
         QFile ps4binfile(QFileInfo(file).path() + "/" + QFileInfo(file).fileName() + ".bin");//QFileInfo(file).baseName()
         if (!ps4binfile.open(QIODevice::ReadOnly)) {
+            qInfo() << tr("[FF7Save::loadFile] PS4 BIN File error: missing file: %1").arg(QFileInfo(ps4binfile).absoluteFilePath());
             return false;
         } else {
             qInfo() << tr("[FF7Save::loadFile] PS4 BIN File loaded: %1").arg(QFileInfo(ps4binfile).absoluteFilePath());
